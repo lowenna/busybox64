@@ -12,7 +12,7 @@
 # http://github.com/jhowardmsft/busybox64
 
 FROM nanoserver
-ADD busybox.exe c:\\windows\\system32
+ADD https://github.com/jhowardmsft/busybox64/raw/master/busybox.exe c:\\windows\\system32
 SHELL ["powershell", "-command"]
 RUN cd c:\windows\system32; busybox.exe --list | %{New-Item -ItemType Hardlink -Name $_`.exe -Target busybox.exe 2>&1 | Out-Null}
 SHELL ["cmd", "/S", "/C"]
