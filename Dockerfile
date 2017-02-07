@@ -11,9 +11,17 @@
 #
 # http://github.com/jhowardmsft/busybox64
 
+
+#ADD https://github.com/jhowardmsft/busybox64/raw/master/busybox.exe?raw=true c:\\windows\\system32
+#SHELL ["powershell", "-command"]
+#RUN cd c:\windows\system32; busybox.exe --list | %{New-Item -ItemType Hardlink -Name $_`.exe -Target busybox.exe 2>&1 | Out-Null}
+#SHELL ["cmd", "/S", "/C"]
+#ENTRYPOINT ["busybox.exe"]
+
+
 FROM microsoft/nanoserver
-ADD https://github.com/jhowardmsft/busybox64/raw/master/busybox.exe?raw=true c:\\windows\\system32
-SHELL ["powershell", "-command"]
-RUN cd c:\windows\system32; busybox.exe --list | %{New-Item -ItemType Hardlink -Name $_`.exe -Target busybox.exe 2>&1 | Out-Null}
-SHELL ["cmd", "/S", "/C"]
-ENTRYPOINT ["busybox.exe"]
+RUN mkdir C:\tmp && mkdir C:\busybox
+ADD https://github.com/jhowardmsft/busybox64/raw/master/busybox.exe?raw=true /busybox/
+RUN setx /M PATH "C:\busybox;%PATH%"
+RUN powershell busybox.exe --list ^|%{$nul = cmd /c mklink C:\busybox\$_.exe busybox.exe}
+ENTRYPOINT ["C:/busybox/busybox.exe"]
