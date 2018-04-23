@@ -20,8 +20,10 @@
 
 
 FROM microsoft/nanoserver
-RUN mkdir C:\tmp && mkdir C:\busybox
+RUN mkdir C:\tmp && mkdir C:\busybox && mkdir C:\powershell
 ADD https://github.com/jhowardmsft/busybox64/raw/master/busybox.exe?raw=true /busybox/
-RUN setx /M PATH "C:\busybox;%PATH%"
-RUN powershell busybox.exe --list ^|%{$nul = cmd /c mklink C:\busybox\$_.exe busybox.exe}
+RUN curl.exe -fsSL "https://github.com/PowerShell/PowerShell/releases/download/v6.0.2/PowerShell-6.0.2-win-x64.zip" -o c:\powershell.zip
+RUN setx /M PATH "C:\busybox;c:\powershell;%PATH%"
+RUN cd c:\powershell && tar.exe -xf c:\powershell.zip
+RUN pwsh -command busybox.exe --list ^|%{$nul = cmd /c mklink C:\busybox\$_.exe busybox.exe}
 ENTRYPOINT ["C:/busybox/busybox.exe"]
